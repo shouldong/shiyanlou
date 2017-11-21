@@ -2,6 +2,32 @@
 
 import sys
 
+def Config(Object):
+	__config = {};
+
+	def __init__(self, filePath):
+		with open(filePath) as file:
+			for line in file:
+				list = line.split('=')
+				self.__config[list[0].strip()] = list[1].strip()
+	
+	def get_config(self, key)
+		return self.__config[key]
+
+def EmployeeData(Object):
+	__employee = {};
+
+	def __init__(self, filePath):
+		with open(filePath) as file:
+			for line in file:
+				list = line.split('=')
+				self.__employee[list[0].strip()] = list[1].strip()
+
+	def calculator(self, minBase, maxBase):
+		for key, value in self__employee.items():
+			
+			
+
 def getSalaryAfterTax(income):
 	payment = income * 0.165
 	if income <= 3500:

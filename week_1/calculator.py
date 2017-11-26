@@ -13,7 +13,7 @@ INCOME_TAX_QUICK_TABLE = [
 	IncomeTaxQuickItem(80000, 0.45, 13505), 
 	IncomeTaxQuickItem(50000, 0.35, 5505), 
 	IncomeTaxQuickItem(35000, 0.30, 2755),
-	IncomeTaxQuickItem(9000, 0.25, 1005)
+	IncomeTaxQuickItem(9000, 0.25, 1005),
 	IncomeTaxQuickItem(4500, 0.20, 555),
 	IncomeTaxQuickItem(1500, 0.10, 105),
 	IncomeTaxQuickItem(0, 0.03, 0)]

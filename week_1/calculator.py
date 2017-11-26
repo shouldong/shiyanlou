@@ -2,9 +2,9 @@
 
 import sys
 import csv
-from clooections import nametuple
+from collections import namedtuple
 
-IncomeTaxQuickItem = nametuple('IncomeTaxQuickItem', 
+IncomeTaxQuickItem = namedtuple('IncomeTaxQuickItem', 
 	['start_point', 'tax_rate', 'quick_deduction'])
 
 INCOME_TAX_START_POINT = 3500
@@ -18,7 +18,7 @@ INCOME_TAX_QUICK_TABLE = [
 	IncomeTaxQuickItem(1500, 0.10, 105),
 	IncomeTaxQuickItem(0, 0.03, 0)]
 
-class Args(Object):
+class Args(object):
 	def __init__(self):
 		self.args = sys.argv[1:]
 
@@ -26,7 +26,7 @@ class Args(Object):
 		try:
 			index = self.args.index(option)
 			return self.args[index + 1]
-		except (ValueError, IndexError)
+		except (ValueError, IndexError):
 			print('Parameter Error')
 			exit()
 
@@ -43,9 +43,9 @@ class Args(Object):
 		return self._value_after_option('-o')
 
 
-class Config(Object):
+class Config(object):
 	def __init__(self, filePath):
-		self.config = self._read_config()
+		self.config = self._read_config(filePath)
 
 	def _read_config(self, filePath):
 		config = {}
@@ -85,7 +85,7 @@ class Config(Object):
 			self._get_config('GongJiJin')])
 
 
-class EmployeeData(Object):
+class EmployeeData(object):
 	def __init__(self, filePath):
 		self.employeeData = self._read_employee_data(filePath)
 
@@ -99,29 +99,27 @@ class EmployeeData(Object):
 				except ValueError:
 					print(employee_id + " : Parameter Error")
 					exit()
-				employeeData.append((employee_id, incom))
+				employeeData.append((employee_id, income))
 		return employeeData
 
 	def __iter__(self):
-		return iter(self.emplyeeData)
+		return iter(self.employeeData)
 			
 
 class IncomeTaxCalculator(object):
-	def __init__(self, emplyeeData, config):
-		self.employeeData = emplyeeData
+	def __init__(self, employeeData, config):
+		self.employeeData = employeeData
 		self.config = config
 
-	@staticmethod
-	def cal_social_insurance(income):
+	def cal_social_insurance(self, income):
 		if income < self.config.social_insurance_baseline_low:
 			return self.config.social_insurance_baseline_low * self.config.social_insurance_total_rate
-		if income < self.config.social_insurance_baseline_high:
+		if income > self.config.social_insurance_baseline_high:
 			return self.config.social_insurance_baseline_high * self.config.social_insurance_total_rate
 		return income * self.config.social_insurance_total_rate
 
-	@classmethod
-	def cal_income_tax_and_remain(cls, income):
-		social_insurance = cls.cal_social_insurance(income)
+	def cal_income_tax_and_remain(self, income):
+		social_insurance = self.cal_social_insurance(income)
 		real_income = income - social_insurance
 		taxable_part = real_income - INCOME_TAX_START_POINT
 		if taxable_part <= 0:
@@ -134,7 +132,7 @@ class IncomeTaxCalculator(object):
 	def cal_for_all_employee(self):
 		result = []
 		for employee_id, income in self.employeeData:
-			data = [employee_id, incom]
+			data = [employee_id, income]
 			social_insurance = '{:.2f}'.format(self.cal_social_insurance(income))
 			tax, remain = self.cal_income_tax_and_remain(income)
 			data += [social_insurance, tax, remain]
@@ -151,6 +149,6 @@ class IncomeTaxCalculator(object):
 if __name__ == '__main__':
 	args = Args()
 	config = Config(args.config_path)
-	employeeData = EmployeeData(config.userdata_path)
+	employeeData = EmployeeData(args.userdata_path)
 	calculator = IncomeTaxCalculator(employeeData, config)
-	calculator.export(config.export_path)
+	calculator.export(args.export_path)

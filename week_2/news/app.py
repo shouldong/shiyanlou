@@ -21,12 +21,12 @@ class Files(object):
 	def _read_all_files(self):
 		dirt_name_title = {}
 		dirt_name_json = {}
-		for filename in os.listdir(self.directory)
+		for filename in os.listdir(self.directory):
 			file_path = os.path.join(self.directory, filename)
 			with open(file_path) as f:
 				file_json = json.load(f)
 				dirt_name_json[filename[:-5]] = file_json
-				dirt_name_title[filename[:-5]] = file_json.title
+				dirt_name_title[filename[:-5]] = file_json['title']
 		return FileDirt(dirt_name_title, dirt_name_json)
 
 	def get_title_list(self):
@@ -39,7 +39,7 @@ files = Files()
 
 @app.route('/')
 def index():
-	return render_template('index.html', title_list = files.get_title_list)
+	return render_template('index.html', title_dirt = files.get_title_list())
 
 @app.route('/files/<filename>')
 def file(filename):
@@ -54,4 +54,4 @@ def not_found(e):
 		
 
 if __name__ == '__main__':
-	app.run()
+	app.run(debug=True)

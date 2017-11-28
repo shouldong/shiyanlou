@@ -1,15 +1,15 @@
 {% macro render_test_json(file_json) %}
 	<div>
-		<p>title: {{ file_json.title }}</p>
-		<p>created_time: {{ file_json.created_time }}</p>
-		<p>content: {{ file_json.content }}</p>
+		<p>title: {{ file_json['title'] }}</p>
+		<p>created_time: {{ file_json['created_time'] }}</p>
+		<p>content: {{ file_json['content'] }}</p>
 	</div>
 {% endmacro %}
 
-{% macro render_test_file(fileDirt) %}
+{% macro render_test_file(title_dirt) %}
 	<ul>
-		{% for filename in fileDirt %}
-			<li><a href={{ url_for('file', filename=filename) }}>{{ fileDirt[key] }}</a></li>
+		{% for filename in title_dirt) %}
+			<li><a href={{ url_for('files', filename=filename) }}>{{ title_dirt[filename] }}</a></li>
 		{% endfor %}
 	</ul>
 {% endmacro %}

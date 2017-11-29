@@ -4,53 +4,64 @@
 import os
 import json
 from flask import Flask, render_template, abort
+from flask_sqlalchemy import SQLAlchemy
+from datetime import datetime
 
 app = Flask(__name__)
 app.config['TEMPLATES_AUTO_RELOAD'] = True
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root@localhost/mydatabase'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root@localhost/shiyanlou'
+
+db = SQLAlchemy(app)
 
 
-class Files(object):
-    directory = os.path.join(os.path.abspath(os.path.dirname(__name__)), '..', 'files')
+class Article(db.Model):
+    __tablename__ = 'article'
 
-    def __init__(self):
-        self._files = self._read_all_files()
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(80))
+    created_time = db.Column(db.DateTime)
+    category_id = db.Column(db.Integer, db.ForeignKey('category.id'))
+    category = db.relationship('Category', uselist=False)
+    content = db.Column(db.Text)
 
-    def _read_all_files(self):
-        dirt_name_json = {}
-        for filename in os.listdir(self.directory):
-            file_path = os.path.join(self.directory, filename)
-            with open(file_path) as f:
-                file_json = json.load(f)
-                dirt_name_json[filename[:-5]] = file_json
-        return dirt_name_json
-
-    def get_title_list(self):
-        return [item['title'] for item in self._files.values()]
-
-    def get_name_list(self):
-        return list(self._files.keys())
-
-    def get_dirt_name_title(self):
-        dirt_name_title = {}
-        for name, file_json in self._files.items():
-            dirt_name_title[name] = file_json['title']
-        return dirt_name_title
-
-    def get_json_by_filename(self, filename):
-        return self._files.get(filename)
+    def __init__(self, title, created_time, category, content):
+        self.title = title
+        self.created_time = created_time
+        self.category = category
+        self.content = content
 
 
-files = Files()
+class Category(db.Model):
+    __tablename__ = 'category'
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(80), unique=True)
+    article = db.relationship('Article')
+
+    def __init__(self, name):
+        self.name = name
+
+
+def insert_data():
+    db.create_all()
+    java = Category('Java')
+    python = Category('Python')
+    article1 = Article('Hello Java', datetime.utcnow(), java, 'Article Content - Java is cool!')
+    article2 = Article('Hello Python', datetime.utcnow(), python, 'Article Content - Python is coooool!!!')
+    db.session.add(java)
+    db.session.add(python)
+    db.session.add(article1)
+    db.session.add(article2)
+    db.session.commit()
+
+
+def delete_data():
+    db.drop_all()
+    db.session.commit()
 
 
 @app.route('/')
 def index():
-    # dirt_name = {}
-    # name_list = files.get_name_list()
-    # title_list = files.get_title_list()
-    # for index in range(len(name_list)):
-    #     dirt_name[name_list[index]] = title_list[index]
     return render_template('index.html', dirt_name_title=files.get_dirt_name_title())
 
 

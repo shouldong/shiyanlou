@@ -6,10 +6,10 @@
 	</div>
 {% endmacro %}
 
-{% macro render_test_file(title_dirt) %}
+{% macro render_test_file(dirt_name_title) %}
 	<ul>
-		{% for filename in title_dirt) %}
-			<li><a href={{ url_for('files', filename=filename) }}>{{ title_dirt[filename] }}</a></li>
+		{% for name in dirt_name_title %}
+		<li><a href={{ url_for("file", filename=name) }}>{{ dirt_name_title[name] }}</a></li>
 		{% endfor %}
 	</ul>
 {% endmacro %}

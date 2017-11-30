@@ -1,0 +1,7 @@
+{% extends "base.html" %}
+
+{% from 'macro.html' import render_article %}
+
+{% block content %}
+	{{ render_article(article, category) }}
+{% endblock %}

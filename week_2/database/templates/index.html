@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
-{% from 'macro.html' import render_test_file %}
+{% from 'macro.html' import render_article_list %}
 
 {% block content %}
-	{{ render_test_file(dirt_name_title) }}
+	{{ render_article_list(articles) }}
 {% endblock %}

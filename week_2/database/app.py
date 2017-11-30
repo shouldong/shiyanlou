@@ -62,15 +62,14 @@ def delete_data():
 
 @app.route('/')
 def index():
-    return render_template('index.html', dirt_name_title=files.get_dirt_name_title())
+    return render_template('index.html', articles=Article.query.all())
 
 
-@app.route('/files/<filename>')
-def file(filename):
-    file_json = files.get_json_by_filename(filename)
-    if not file_json:
-        abort(404)
-    return render_template('file.html', file_json=file_json)
+@app.route('/articles/<article_id>')
+def article(article_id):
+    article = Article.query.get_or_404(article_id)
+    category = Category.query.get_or_404(article.category_id)
+    return render_template('article.html', article=article, category=category)
 
 
 @app.errorhandler(404)

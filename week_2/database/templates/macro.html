@@ -1,15 +1,16 @@
-{% macro render_test_json(file_json) %}
+{% macro render_article(article, category) %}
 	<div>
-		<p>title: {{ file_json['title'] }}</p>
-		<p>created_time: {{ file_json['created_time'] }}</p>
-		<p>content: {{ file_json['content'] }}</p>
+		<h1>{{ article.title }}</h1>
+		<p>{{ category.name }}</p>
+		<h2>{{ article.content }}</h2>
+		<p>{{ article.created_time }}</p>
 	</div>
 {% endmacro %}
 
-{% macro render_test_file(dirt_name_title) %}
+{% macro render_article_list(articles) %}
 	<ul>
-		{% for name in dirt_name_title %}
-		<li><a href={{ url_for("file", filename=name) }}>{{ dirt_name_title[name] }}</a></li>
+		{% for article in articles %}
+		<li><a href={{ url_for("article", article_id=article.id) }}>{{ article.title }}</a></li>
 		{% endfor %}
 	</ul>
 {% endmacro %}

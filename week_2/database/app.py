@@ -5,13 +5,19 @@ import os
 import json
 from flask import Flask, render_template, abort
 from flask_sqlalchemy import SQLAlchemy
+from pymongo import MongoClient
 from datetime import datetime
 
 app = Flask(__name__)
-app.config['TEMPLATES_AUTO_RELOAD'] = True
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root@localhost/shiyanlou'
+app.config.update(
+    DEBUG = True,
+    TEMPLATES_AUTO_RELOAD = True,
+    SQLALCHEMY_DATABASE_URI = 'mysql://root@localhost/shiyanlou'
+)
+
 
 db = SQLAlchemy(app)
+mongo = MongoClient('127.0.0.1', 27017).shiyanlou
 
 
 class Article(db.Model):
@@ -29,6 +35,35 @@ class Article(db.Model):
         self.created_time = created_time
         self.category = category
         self.content = content
+
+    def add_tag(self, tag_name):
+        article_item = mongo.article.find_one({'article_id': self.id})
+        if article_item:
+            tags = article_item['tags']
+            if tag_name not in tags:
+                tags.append(tag_name)
+                mongo.article.update_one({'article_id': self.id}, {'$set': {'tags': tags}})
+        else:
+            tags = [tag_name]
+            mongo.article.insert_one({'article_id': self.id, 'tags': tags})
+        return tags
+
+    def remove(self, tag_name):
+        article_item = mongo.article.find_one({'article_id': self.id})
+        if article_item:
+            tags = article_item['tags']
+            if tag_name in tags:
+                tags.remove(tag_name)
+                mongo.article.update_one({'article_id': self.id}, {'$set': {'tags': tags}})
+            return tags
+        return []
+
+    @property
+    def tags(self):
+        article_item = mongo.article.find_one({'article_id': self.id})
+        if article_item:
+            return article_item['tags']
+        return []
 
 
 class Category(db.Model):
@@ -53,6 +88,11 @@ def insert_data():
     db.session.add(article1)
     db.session.add(article2)
     db.session.commit()
+    article1.add_tag('tech')
+    article1.add_tag('java')
+    article1.add_tag('linux')
+    article2.add_tag('tech')
+    article2.add_tag('python')
 
 
 def delete_data():
@@ -78,4 +118,4 @@ def not_found(e):
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run()

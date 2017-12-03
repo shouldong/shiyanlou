@@ -12,6 +12,7 @@ app = Flask(__name__)
 app.config.update(
     DEBUG = True,
     TEMPLATES_AUTO_RELOAD = True,
+    SQLALCHEMY_TRACK_MODIFICATIONS = True,
     SQLALCHEMY_DATABASE_URI = 'mysql://root@localhost/shiyanlou'
 )
 

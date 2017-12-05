@@ -8,7 +8,8 @@ class ShiyanlouSpider(scrapy.Spider):
 
 	@property
 	def start_urls(self):
-		pass
+		url_tmpl = "https://github.com/shiyanlou?tab=repositories&page={}"
+		return (url_tmpl.format(i) for i in range(1, 5))
 
 	def parse(self, response):
 		pass

@@ -6,7 +6,7 @@ import pandas as pd
 
 def quarter_volume(file):
 	try:
-		data = pd.read_csv(file)
+		data = pd.read_csv(file, header=0)
 	except ValueError:
 		return
 

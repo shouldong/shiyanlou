@@ -1,0 +1,29 @@
+#!/usr/bin/env python3
+# -*- coding:utf-8 -*-
+
+from functools import wraps
+import json
+
+
+class RedisCache:
+
+	def __init__(self, redis_client):
+		self._redis = redis_client
+
+	def cache(self, timeout=0):
+		def decorator(f):
+			@wraps
+			def wrapped(*args, **kwargs):
+				if timeout == 0:
+					return f(*args, **kwargs)
+				key = f.__name__
+				raw = self._redis.get(key)
+				if not raw:
+					value = f(*args, **kwargs)
+					self._redis.setex(key, json.dumps(value))
+					return value
+				else:
+					return json.loads(raw)
+			return wrapped
+		return decorator
+
